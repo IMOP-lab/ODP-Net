@@ -21,7 +21,7 @@ from typing import Callable
 
 import torch
 
-from network import ENet, ODPNet, SegNet, UNet
+from network import ENet, ODPNet, R2UNet, SegNet, UNet
 
 
 def build_model(name: str) -> torch.nn.Module:
@@ -33,6 +33,11 @@ def build_model(name: str) -> torch.nn.Module:
         return SegNet(n_channels=3, n_classes=2)
     if name == "enet":
         return ENet(n_channels=3, n_classes=2)
+    if name == "r2unet":
+        # base_channels=32 reproduces the manuscript row (9.78 M params).
+        # Use R2UNet(..., base_channels=64) in a standalone script for the
+        # canonical upstream-width variant.
+        return R2UNet(n_channels=3, n_classes=2, base_channels=32, t=2)
     # The baselines below depend on optional third-party packages (timm for
     # UNeXt and Polyp-PVT, torchvision for the PDAtt models), so they are
     # imported here instead of at module scope: a missing optional dependency
@@ -148,6 +153,7 @@ def main() -> None:
             "unet",
             "segnet",
             "enet",
+            "r2unet",
             "unext",
             "pattunet",
             "dattunet",

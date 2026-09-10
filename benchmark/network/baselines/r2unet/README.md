@@ -1,5 +1,15 @@
 # R2U-Net
 
+The benchmark adapter is now available as `network.baselines.r2unet.model`.
+It follows the public `navamikairanda/R2U-Net` implementation and removes
+training/dataset code so that the architecture can be profiled offline.
+
+The command-line benchmark uses `base_channels=32` by default.  This is the
+half-width configuration (32/64/128/256/512) and gives approximately 9.78M
+parameters, matching the current manuscript complexity row.  The upstream
+default is full width (64/128/256/512/1024), which is available by constructing
+`R2UNet(base_channels=64)` directly and has approximately 39.09M parameters.
+
 ## Manuscript entry
 
 - Citation: M. Z. Alom, C. Yakopcic, M. Hasan, T. M. Taha, V. K. Asari, "Recurrent

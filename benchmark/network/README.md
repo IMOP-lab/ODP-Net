@@ -7,7 +7,7 @@ network/
     ├── unet/               # integrated
     ├── segnet/             # integrated
     ├── enet/               # integrated
-    └── r2unet/             # placeholder
+    └── r2unet/             # integrated R2U-Net (half-width benchmark default)
 ```
 
 Each model package should expose a PyTorch module with the same contract:
