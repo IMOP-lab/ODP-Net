@@ -15,6 +15,7 @@ logits = model(x)  # x: [B, 3, H, W], logits: [B, 2, H, W]
 Current model groups:
 
 - `unet/`, `segnet/`, `enet/`, `r2unet/`: classic convolutional baselines
+- `mewunet/`: frequency-domain multi-axis representation baseline
 - `unext/`, `mewunet/`, `pattunet/`, `dattunet/`: modern CNN/U-Net variants
 - `polyp_pvt/`, `mdvit/`: Transformer or hybrid attention models
 - `vm_unet/`, `vmamba/`, `ccvim/`: state-space or visual state-space models

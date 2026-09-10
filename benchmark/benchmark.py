@@ -38,6 +38,10 @@ def build_model(name: str) -> torch.nn.Module:
         # Use R2UNet(..., base_channels=64) in a standalone script for the
         # canonical upstream-width variant.
         return R2UNet(n_channels=3, n_classes=2, base_channels=32, t=2)
+    if name == "mewunet":
+        from network import MEWUNet
+
+        return MEWUNet(n_channels=3, n_classes=2)
     # The baselines below depend on optional third-party packages (timm for
     # UNeXt and Polyp-PVT, torchvision for the PDAtt models), so they are
     # imported here instead of at module scope: a missing optional dependency
@@ -154,6 +158,7 @@ def main() -> None:
             "segnet",
             "enet",
             "r2unet",
+            "mewunet",
             "unext",
             "pattunet",
             "dattunet",

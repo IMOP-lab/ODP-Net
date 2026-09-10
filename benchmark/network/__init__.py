@@ -19,6 +19,7 @@ _LAZY_MODELS = {
     "PAttUNet": ("baselines.pattunet.model", "PAttUNet"),
     "DAttUNet": ("baselines.dattunet.model", "DAttUNet"),
     "PolypPVT": ("baselines.polyp_pvt.model", "PolypPVT"),
+    "MEWUNet": ("baselines.mewunet.model", "MEWUNet"),
 }
 
 __all__ = [
@@ -26,6 +27,7 @@ __all__ = [
     "DP_CoNet",
     "UNet",
     "R2UNet",
+    "MEWUNet",
     "SegNet",
     "ENet",
     "UNext",

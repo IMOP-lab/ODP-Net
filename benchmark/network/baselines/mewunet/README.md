@@ -1,5 +1,13 @@
 # MEWUNet
 
+The benchmark adapter is available as `network.baselines.mewunet.model.MEWUNet`
+and is selected with `--model mewunet`. It follows the official
+`JCruan519/MEW-UNet` architecture while omitting dataset and training code.
+
+The benchmark uses `n_channels=3`, `n_classes=2`, `dim=[32, 64, 128, 256, 512]`,
+`depth=[1, 2, 2, 4]`, and `mlp_ratio=4`, matching the official model defaults
+except for the output channel count (the repository default is 9 for Synapse).
+
 ## Manuscript entry
 
 - Citation: J. Ruan, J. Gao, M. Xie, S. Xiang, "Learning multi-axis representation
