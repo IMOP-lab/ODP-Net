@@ -46,9 +46,14 @@ def thop_counts(model: torch.nn.Module, x: torch.Tensor) -> dict[str, float] | N
     except ImportError:
         print("THOP not installed; skipping operation count. Install with: python -m pip install thop")
         return None
-    model.eval()
+
+    # THOP registers forward hooks and some versions may leave stale hooks on the
+    # profiled module. Profile a temporary CPU model so latency/memory tests use
+    # an untouched CUDA model.
+    profile_model = ODPNet(n_channels=3, n_classes=2, bilinear=False).eval()
+    profile_x = torch.zeros(tuple(x.shape), dtype=x.dtype)
     with torch.inference_mode():
-        macs, params = profile(model, inputs=(x,), verbose=False)
+        macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
     # THOP reports MACs although papers often label this column GFLOPs.
     return {
         "thop_macs": float(macs),
