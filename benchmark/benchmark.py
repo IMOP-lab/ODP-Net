@@ -1,8 +1,13 @@
-"""Benchmark ODP-Net with the manuscript's 224x224 inference setting.
+"""Benchmark one segmentation model under the manuscript's inference setting.
 
 This script measures parameter count, THOP operation counts, CUDA inference
 latency, and peak allocated GPU memory for one model input. It does not train
 the network and does not require a checkpoint for architecture-only measures.
+
+``--size`` defaults to 224, the manuscript's slice-wise inference setting; pass
+``--size 256`` to reproduce the complexity table's stated input size. The
+manuscript's ``GFLOPs`` column corresponds to ``thop.thop_gmacs`` (one operation
+per multiply-accumulate), not to ``thop.thop_gflops_2x``.
 """
 
 from __future__ import annotations
@@ -28,6 +33,26 @@ def build_model(name: str) -> torch.nn.Module:
         return SegNet(n_channels=3, n_classes=2)
     if name == "enet":
         return ENet(n_channels=3, n_classes=2)
+    # The baselines below depend on optional third-party packages (timm for
+    # UNeXt and Polyp-PVT, torchvision for the PDAtt models), so they are
+    # imported here instead of at module scope: a missing optional dependency
+    # must not break benchmarking of the models that do not need it.
+    if name == "unext":
+        from network import UNext
+
+        return UNext(n_channels=3, n_classes=2)
+    if name == "pattunet":
+        from network import PAttUNet
+
+        return PAttUNet(n_channels=3, n_classes=2)
+    if name == "dattunet":
+        from network import DAttUNet
+
+        return DAttUNet(n_channels=3, n_classes=2)
+    if name == "polyp_pvt":
+        from network import PolypPVT
+
+        return PolypPVT(n_channels=3, n_classes=2)
     raise ValueError(f"Unsupported model: {name}")
 
 
@@ -118,7 +143,16 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model",
-        choices=("odpnet", "unet", "segnet", "enet"),
+        choices=(
+            "odpnet",
+            "unet",
+            "segnet",
+            "enet",
+            "unext",
+            "pattunet",
+            "dattunet",
+            "polyp_pvt",
+        ),
         default="odpnet",
     )
     parser.add_argument("--size", type=int, default=224)
