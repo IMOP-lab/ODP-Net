@@ -1,3 +1,4 @@
 *.tex
 __pycache__
 README_CN.md
+.vscode
