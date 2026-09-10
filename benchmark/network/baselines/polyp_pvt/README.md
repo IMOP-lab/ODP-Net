@@ -69,10 +69,8 @@
   state_dict containing the backbone keys. Note that this `torch.load` has no
   `map_location` (a CUDA-saved checkpoint fails on a CPU-only machine) and on
   torch 2.5.1 defaults to `weights_only=False`.
-- Dependencies: **torch + timm only**. `pvtv2.py` imports
-  `timm.models.layers`, `timm.models.registry` and
-  `timm.models.vision_transformer`; all three still resolve on modern timm via
-  deprecation shims (FutureWarning only). No einops, no mmcv/mmseg, no
+- Dependencies: **PyTorch only** in this benchmark adapter. The small upstream
+  `timm` layer helpers are implemented locally. No einops, no mmcv/mmseg, no
   segmentation-models-pytorch, and no CUDA kernel compilation.
 
 ## Measurement caveats
@@ -111,6 +109,6 @@ CUDA_VISIBLE_DEVICES=0 python benchmark/benchmark.py \
 
 Expected: `parameters` = 25,107,670 (the upstream 1-channel model is 25,107,604;
 the two heads gain 66 parameters in total) and `thop.thop_gmacs` about 5.77 G at
-256 x 256. Requires `timm`. Note that Polyp-PVT is canonically benchmarked at
+256 x 256. Note that Polyp-PVT is canonically benchmarked at
 352 x 352, so measure `--size 256` for table parity and optionally
 `--size 352` for the canonical setting.

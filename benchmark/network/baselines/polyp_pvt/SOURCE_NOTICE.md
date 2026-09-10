@@ -49,11 +49,10 @@ complete list.  In short:
   nothing is read from disk unless `pretrained` is a path, in which case it is
   loaded with `map_location='cpu'`.
 - `timm.models.registry.register_model` is dropped and `pvt_v2_b2` is a plain
-  factory function; the `timm.models.layers` import is guarded with a
-  `timm.layers` (timm >= 0.9) first / `timm.models.layers` fallback.
+  factory function; the small `timm` layer helpers are implemented locally.
 - Relative import (`from .pvtv2 import pvt_v2_b2`) instead of `from lib.pvtv2
   import pvt_v2_b2`.
 
-Dependencies: **torch + timm only** (no einops, no mmcv/mmseg, no
+Dependencies: **PyTorch only** in this benchmark adapter (no einops, no mmcv/mmseg, no
 segmentation-models-pytorch, no CUDA kernels, and no network access or
 checkpoint files at construction time).

@@ -15,8 +15,8 @@ Adapted for this benchmark harness:
   import and both ``pvt_v2_b2`` copies of it are therefore dropped; the
   ``timm.models.registry`` module is empty/deprecated in timm 1.x and may be
   removed in a future release.  The architecture is unchanged.
-* ``timm.models.layers`` is a deprecation shim in timm 1.x, so the layer imports
-  are guarded with a ``timm.layers`` first / ``timm.models.layers`` fallback.
+* The small ``timm`` layer helpers used by PVTv2 are implemented locally below,
+  so this benchmark adapter does not require an external ``timm`` package.
 * ``in_chans`` is threaded through ``pvt_v2_b2`` so the harness can select the
   input channel count.  The value is passed to ``OverlapPatchEmbed`` only, which
   is exactly where the upstream code hardcoded ``in_chans=3``.
@@ -44,10 +44,39 @@ from functools import partial
 import torch
 import torch.nn as nn
 
-try:  # timm >= 0.9
-    from timm.layers import DropPath, to_2tuple, trunc_normal_
-except ImportError:  # timm < 0.9
-    from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+
+def to_2tuple(value):
+    return value if isinstance(value, tuple) else (value, value)
+
+
+def trunc_normal_(tensor, mean=0.0, std=1.0, a=-2.0, b=2.0):
+    return nn.init.trunc_normal_(
+        tensor,
+        mean=mean,
+        std=std,
+        a=a,
+        b=b,
+    )
+
+
+class DropPath(nn.Module):
+    """Stochastic depth replacement for timm.layers.DropPath."""
+
+    def __init__(self, drop_prob=0.0):
+        super().__init__()
+        self.drop_prob = float(drop_prob)
+
+    def forward(self, x):
+        if self.drop_prob == 0.0 or not self.training:
+            return x
+        keep_prob = 1.0 - self.drop_prob
+        shape = (x.shape[0],) + (1,) * (x.ndim - 1)
+        random_tensor = keep_prob + torch.rand(
+            shape,
+            dtype=x.dtype,
+            device=x.device,
+        )
+        return x.div(keep_prob) * random_tensor.floor()
 
 
 class Mlp(nn.Module):
