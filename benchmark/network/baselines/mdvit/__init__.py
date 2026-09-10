@@ -1,0 +1,1 @@
+"""MDViT baseline placeholder."""

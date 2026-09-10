@@ -1,0 +1,1 @@
+"""MEWUNet baseline placeholder."""
