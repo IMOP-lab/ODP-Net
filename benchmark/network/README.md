@@ -4,9 +4,10 @@
 network/
 ├── odpnet/                 # ODP-Net and its private implementation modules
 └── baselines/              # comparison models
-    ├── unet/
-    ├── segnet/             # add when the SegNet source is available
-    └── r2unet/             # add when the R2U-Net source is available
+    ├── unet/               # integrated
+    ├── segnet/             # integrated
+    ├── enet/               # integrated
+    └── r2unet/             # placeholder
 ```
 
 Each model package should expose a PyTorch module with the same contract:

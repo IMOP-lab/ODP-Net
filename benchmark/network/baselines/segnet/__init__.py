@@ -1,5 +1,5 @@
-"""SegNet baseline placeholder.
+"""SegNet baseline adapted from vinceecws/SegNet_PyTorch."""
 
-Add the upstream implementation here and export the model class from this
-module once integrated.
-"""
+from .model import SegNet
+
+__all__ = ["SegNet"]

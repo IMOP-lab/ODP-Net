@@ -16,7 +16,7 @@ from typing import Callable
 
 import torch
 
-from network import ODPNet, UNet
+from network import ENet, ODPNet, SegNet, UNet
 
 
 def build_model(name: str) -> torch.nn.Module:
@@ -24,6 +24,10 @@ def build_model(name: str) -> torch.nn.Module:
         return ODPNet(n_channels=3, n_classes=2, bilinear=False)
     if name == "unet":
         return UNet(n_channels=3, n_classes=2, bilinear=False)
+    if name == "segnet":
+        return SegNet(n_channels=3, n_classes=2)
+    if name == "enet":
+        return ENet(n_channels=3, n_classes=2)
     raise ValueError(f"Unsupported model: {name}")
 
 
@@ -112,7 +116,11 @@ def peak_memory(model: torch.nn.Module, x: torch.Tensor) -> float:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", choices=("odpnet", "unet"), default="odpnet")
+    parser.add_argument(
+        "--model",
+        choices=("odpnet", "unet", "segnet", "enet"),
+        default="odpnet",
+    )
     parser.add_argument("--size", type=int, default=224)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=100)
