@@ -52,9 +52,9 @@ UNext(num_classes, input_channels=3, deep_supervision=False, img_size=224,
 
 Only the imports change; the module topology is untouched.
 
-1. `from timm.models.layers import DropPath, to_2tuple, trunc_normal_` becomes
-   `from timm.layers import ...`. The `timm.models.layers` path was removed in
-   timm 1.0.
+1. The `timm` dependency is replaced with local PyTorch implementations of
+   `DropPath`, `to_2tuple`, and `trunc_normal_`. No `timm` installation is
+   required.
 2. Drop `from mmcv.cnn import ConvModule`. `ConvModule` is never used in
    `archs.py`, and removing it avoids the upstream pin `mmcv-full==1.2.7`, which
    does not build against PyTorch 2.5.1 + CUDA 12.1.
@@ -84,7 +84,8 @@ it is CUDA-safe under `torch.inference_mode()`.
 ## Integration status and benchmark command
 
 Integrated as `model.py` in this directory and exported as `UNext` from
-`network/__init__.py`.
+`network/__init__.py`. The current implementation is self-contained and does
+not require `timm`, `mmcv`, or any other optional package.
 
 ```bash
 cd ~/hgp/ODP-Net
@@ -94,4 +95,4 @@ CUDA_VISIBLE_DEVICES=0 python benchmark/benchmark.py \
 ```
 
 Expected: `parameters` = 1,471,938, and `thop.thop_gmacs` about 0.57 at
-256 x 256 (about 0.44 at 224 x 224). Requires `timm`.
+256 x 256 (about 0.44 at 224 x 224).

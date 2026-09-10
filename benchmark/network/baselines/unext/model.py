@@ -19,8 +19,8 @@ Adaptations relative to upstream, all deliberate and documented here:
   (never referenced, and ``mmcv-full==1.2.7`` does not build against
   PyTorch 2.5), ``from utils import *``, ``torchvision``, ``matplotlib``,
   ``os`` and ``pdb``.
-- ``timm`` is imported through the modern ``timm.layers`` path with a fallback
-  to ``timm.models.layers`` for timm < 0.9.
+- ``timm`` is not required: its ``DropPath``, ``to_2tuple`` and
+  ``trunc_normal_`` helpers are replaced with local PyTorch equivalents.
 - The ``UNext_S`` variant is not included because the benchmark does not use it.
 
 ``forward`` returns raw logits shaped ``[B, n_classes, H, W]``. Upstream builds
@@ -34,10 +34,39 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-try:  # timm >= 0.9
-    from timm.layers import DropPath, to_2tuple, trunc_normal_
-except ImportError:  # timm < 0.9
-    from timm.models.layers import DropPath, to_2tuple, trunc_normal_
+
+def to_2tuple(value):
+    return value if isinstance(value, tuple) else (value, value)
+
+
+def trunc_normal_(tensor, mean=0.0, std=1.0, a=-2.0, b=2.0):
+    return nn.init.trunc_normal_(
+        tensor,
+        mean=mean,
+        std=std,
+        a=a,
+        b=b,
+    )
+
+
+class DropPath(nn.Module):
+    """Stochastic depth replacement for timm.layers.DropPath."""
+
+    def __init__(self, drop_prob=0.0):
+        super().__init__()
+        self.drop_prob = float(drop_prob)
+
+    def forward(self, x):
+        if self.drop_prob == 0.0 or not self.training:
+            return x
+        keep_prob = 1.0 - self.drop_prob
+        shape = (x.shape[0],) + (1,) * (x.ndim - 1)
+        random_tensor = keep_prob + torch.rand(
+            shape,
+            dtype=x.dtype,
+            device=x.device,
+        )
+        return x.div(keep_prob) * random_tensor.floor()
 
 __all__ = ["UNext"]
 
