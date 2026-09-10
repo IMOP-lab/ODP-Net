@@ -1,0 +1,30 @@
+{
+  "input_size": [
+    1,
+    3,
+    224,
+    224
+  ],
+  "model": "unext",
+  "device": "NVIDIA GeForce RTX 3080",
+  "torch": "2.5.1+cu121",
+  "cuda": "12.1",
+  "parameters": 1471938,
+  "parameters_million": 1.471938,
+  "warmup": 100,
+  "runs": 500,
+  "thop": {
+    "thop_macs": 439522944.0,
+    "thop_gmacs": 0.439522944,
+    "thop_gflops_2x": 0.879045888,
+    "thop_params": 1471938.0
+  },
+  "latency": {
+    "latency_ms_mean": 3.3403548703193664,
+    "latency_ms_median": 3.3381600379943848,
+    "latency_ms_std": 0.06987225890061939,
+    "latency_ms_min": 3.2795839309692383,
+    "latency_ms_max": 4.725759983062744
+  },
+  "peak_allocated_mb": 22.88134765625
+}
