@@ -80,3 +80,18 @@ it is CUDA-safe under `torch.inference_mode()`.
   are counted while the shifting itself is not (about zero MACs either way).
   Note also that this model's upsampling uses `F.interpolate`, which THOP does
   **not** count, whereas models using `nn.Upsample` are counted.
+
+## Integration status and benchmark command
+
+Integrated as `model.py` in this directory and exported as `UNext` from
+`network/__init__.py`.
+
+```bash
+cd ~/hgp/ODP-Net
+CUDA_VISIBLE_DEVICES=0 python benchmark/benchmark.py \
+    --model unext --size 256 --warmup 100 --runs 500 \
+    --output benchmark/unext_256_gpu0.json
+```
+
+Expected: `parameters` = 1,471,938, and `thop.thop_gmacs` about 0.57 at
+256 x 256 (about 0.44 at 224 x 224). Requires `timm`.
