@@ -1,3 +1,5 @@
+"""Encoder components used by ODP-Net."""
+
 import torch
 import torch.nn as nn
 from typing import Union, Type, List, Tuple

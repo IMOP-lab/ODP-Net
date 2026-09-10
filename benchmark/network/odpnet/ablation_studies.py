@@ -1,3 +1,5 @@
+"""Ablation components retained with the ODP-Net source."""
+
 import torch
 import torch.fft
 import torch.nn.functional as F

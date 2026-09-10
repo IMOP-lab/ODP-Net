@@ -1,3 +1,5 @@
+"""ODP-Net model and physics-guided building blocks."""
+
 import torch
 import torch.fft
 import torch.nn.functional as F

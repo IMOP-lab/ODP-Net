@@ -1,3 +1,5 @@
+"""Regularization layers used by ODP-Net."""
+
 from torch import nn
 
 

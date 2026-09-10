@@ -1,4 +1,6 @@
 
+"""Convolutional blocks used by the ODP-Net encoder."""
+
 from typing import Tuple, List, Union, Type
 
 import numpy as np

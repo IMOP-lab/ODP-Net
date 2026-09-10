@@ -1,3 +1,5 @@
+"""Residual blocks used by the ODP-Net encoder."""
+
 from typing import Tuple, List, Union, Type
 import torch.nn
 from torch import nn

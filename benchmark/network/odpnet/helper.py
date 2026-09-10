@@ -1,3 +1,5 @@
+"""Utility helpers used by the ODP-Net encoder."""
+
 from typing import Type
 import numpy as np
 import torch.nn
