@@ -13,13 +13,18 @@
   "parameters_million": 27.427586,
   "warmup": 100,
   "runs": 500,
-  "thop": null,
-  "latency": {
-    "latency_ms_mean": 12.680676933288574,
-    "latency_ms_median": 12.269567966461182,
-    "latency_ms_std": 1.2473668499353139,
-    "latency_ms_min": 6.665472030639648,
-    "latency_ms_max": 21.06777572631836
+  "thop": {
+    "thop_macs": 3149346816.0,
+    "thop_gmacs": 3.149346816,
+    "thop_gflops_2x": 6.298693632,
+    "thop_params": 22037762.0
   },
-  "peak_allocated_mb": 172.40576171875
+  "latency": {
+    "latency_ms_mean": 11.912306316375732,
+    "latency_ms_median": 11.415040016174316,
+    "latency_ms_std": 2.2150709362841243,
+    "latency_ms_min": 6.603775978088379,
+    "latency_ms_max": 30.794944763183594
+  },
+  "peak_allocated_mb": 171.67138671875
 }
