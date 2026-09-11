@@ -116,16 +116,29 @@ def thop_counts(
         return None
 
     # THOP registers forward hooks and some versions may leave stale hooks on the
-    # profiled module. Profile a temporary CPU model so latency/memory tests use
-    # an untouched CUDA model.
+    # profiled module. Profile a temporary model so latency/memory tests use an
+    # untouched CUDA model. Most models can be profiled on CPU, but VM-UNet and
+    # other selective-scan models have a CUDA-only forward kernel.
     profile_model = model_factory().eval()
     profile_x = torch.zeros(tuple(x.shape), dtype=x.dtype)
     try:
         with torch.no_grad():
             macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
     except (RuntimeError, NameError, ImportError) as exc:
-        print(f"THOP profile failed; skipping operation count: {exc}")
-        return None
+        if not torch.cuda.is_available():
+            print(f"THOP profile failed; skipping operation count: {exc}")
+            return None
+        print(f"CPU THOP profile failed ({exc}); retrying on CUDA.")
+        del profile_model, profile_x
+        torch.cuda.empty_cache()
+        profile_model = model_factory().cuda().eval()
+        profile_x = torch.zeros(tuple(x.shape), dtype=x.dtype, device="cuda")
+        try:
+            with torch.no_grad():
+                macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
+        except (RuntimeError, NameError, ImportError) as cuda_exc:
+            print(f"CUDA THOP profile failed; skipping operation count: {cuda_exc}")
+            return None
     # THOP reports MACs although papers often label this column GFLOPs.
     return {
         "thop_macs": float(macs),
