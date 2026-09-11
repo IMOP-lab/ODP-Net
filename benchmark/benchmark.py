@@ -119,11 +119,14 @@ def thop_counts(
     # untouched CUDA model. Most models can be profiled on CPU, but VM-UNet and
     # other selective-scan models have a CUDA-only forward kernel.
     profile_model = model_factory().eval()
+    cuda_only = getattr(profile_model, "benchmark_cuda_only", False)
     profile_x = torch.zeros(tuple(x.shape), dtype=x.dtype)
     try:
+        if cuda_only:
+            raise RuntimeError("model declares CUDA-only profiling")
         with torch.no_grad():
             macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
-    except (RuntimeError, NameError, ImportError) as exc:
+    except (RuntimeError, ValueError, NameError, ImportError) as exc:
         if not torch.cuda.is_available():
             print(f"THOP profile failed; skipping operation count: {exc}")
             return None
@@ -135,7 +138,7 @@ def thop_counts(
         try:
             with torch.no_grad():
                 macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
-        except (RuntimeError, NameError, ImportError) as cuda_exc:
+        except (RuntimeError, ValueError, NameError, ImportError) as cuda_exc:
             print(f"CUDA THOP profile failed; skipping operation count: {cuda_exc}")
             return None
     # THOP reports MACs although papers often label this column GFLOPs.

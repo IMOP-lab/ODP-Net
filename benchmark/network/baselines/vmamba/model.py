@@ -15,6 +15,7 @@ from torch import nn
 class VMambaClassifier(nn.Module):
     def __init__(self, **kwargs):
         super().__init__()
+        self.benchmark_cuda_only = True
         missing = [name for name in ("einops", "timm") if importlib.util.find_spec(name) is None]
         if missing:
             raise ImportError("VMamba requires optional packages: " + ", ".join(missing))
