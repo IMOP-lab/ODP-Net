@@ -1,1 +1,3 @@
-"""VM-UNet baseline placeholder."""
+from .model import VMUNet
+
+__all__ = ["VMUNet"]

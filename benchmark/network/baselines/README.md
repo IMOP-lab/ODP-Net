@@ -20,6 +20,12 @@ Current model groups:
 - `polyp_pvt/`, `mdvit/`: Transformer or hybrid attention models
 - `vm_unet/`, `vmamba/`, `ccvim/`: state-space or visual state-space models
 
+The currently integrated additions are `mdvit`, `vm_unet`, and `ccvim`; run
+them with `benchmark.py --model mdvit`, `--model vm_unet`, or `--model ccvim`.
+The `vmamba` directory contains the official multi-scale classifier backbone,
+but is intentionally not exposed as a segmentation benchmark until a decoder
+configuration is chosen.
+
 ## Manuscript complexity-table cross-check
 
 The values below are the manuscript's `tab:complexity` entries (stated as a

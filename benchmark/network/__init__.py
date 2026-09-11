@@ -20,6 +20,10 @@ _LAZY_MODELS = {
     "DAttUNet": ("baselines.dattunet.model", "DAttUNet"),
     "PolypPVT": ("baselines.polyp_pvt.model", "PolypPVT"),
     "MEWUNet": ("baselines.mewunet.model", "MEWUNet"),
+    "MDViT": ("baselines.mdvit.model", "MDViT"),
+    "VMUNet": ("baselines.vm_unet.model", "VMUNet"),
+    "CCViM": ("baselines.ccvim.model", "CCViM"),
+    "VMambaBackbone": ("baselines.vmamba.model", "VMambaBackbone"),
 }
 
 __all__ = [
@@ -34,6 +38,10 @@ __all__ = [
     "PAttUNet",
     "DAttUNet",
     "PolypPVT",
+    "MDViT",
+    "VMUNet",
+    "CCViM",
+    "VMambaBackbone",
 ]
 
 

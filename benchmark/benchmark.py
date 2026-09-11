@@ -24,7 +24,7 @@ import torch
 from network import ENet, ODPNet, R2UNet, SegNet, UNet
 
 
-def build_model(name: str) -> torch.nn.Module:
+def build_model(name: str, size: int = 224) -> torch.nn.Module:
     if name == "odpnet":
         return ODPNet(n_channels=3, n_classes=2, bilinear=False)
     if name == "unet":
@@ -62,6 +62,23 @@ def build_model(name: str) -> torch.nn.Module:
         from network import PolypPVT
 
         return PolypPVT(n_channels=3, n_classes=2)
+    if name == "mdvit":
+        from network import MDViT
+
+        return MDViT(n_channels=3, n_classes=2, img_size=size)
+    if name == "vm_unet":
+        from network import VMUNet
+
+        return VMUNet(n_channels=3, n_classes=2)
+    if name == "ccvim":
+        from network import CCViM
+
+        return CCViM(n_channels=3, n_classes=2)
+    if name == "vmamba":
+        raise ValueError(
+            "VMamba official code provides a classifier/backbone, not a dense "
+            "segmentation decoder. Choose an explicit decoder before benchmarking it."
+        )
     raise ValueError(f"Unsupported model: {name}")
 
 
@@ -103,8 +120,12 @@ def thop_counts(
     # an untouched CUDA model.
     profile_model = model_factory().eval()
     profile_x = torch.zeros(tuple(x.shape), dtype=x.dtype)
-    with torch.inference_mode():
-        macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
+    try:
+        with torch.no_grad():
+            macs, params = profile(profile_model, inputs=(profile_x,), verbose=False)
+    except (RuntimeError, NameError, ImportError) as exc:
+        print(f"THOP profile failed; skipping operation count: {exc}")
+        return None
     # THOP reports MACs although papers often label this column GFLOPs.
     return {
         "thop_macs": float(macs),
@@ -115,14 +136,16 @@ def thop_counts(
 
 
 def cuda_latency(model: torch.nn.Module, x: torch.Tensor, warmup: int, runs: int) -> dict[str, float]:
-    with torch.inference_mode():
+    # ``no_grad`` is intentional: some selective-scan autograd Functions reject
+    # tensors created under ``inference_mode`` even during a forward-only pass.
+    with torch.no_grad():
         for _ in range(warmup):
             model(x)
     torch.cuda.synchronize()
 
     starts = [torch.cuda.Event(enable_timing=True) for _ in range(runs)]
     ends = [torch.cuda.Event(enable_timing=True) for _ in range(runs)]
-    with torch.inference_mode():
+    with torch.no_grad():
         for start, end in zip(starts, ends):
             start.record()
             model(x)
@@ -163,6 +186,10 @@ def main() -> None:
             "pattunet",
             "dattunet",
             "polyp_pvt",
+            "mdvit",
+            "vm_unet",
+            "ccvim",
+            "vmamba",
         ),
         default="odpnet",
     )
@@ -174,6 +201,11 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
 
+    if args.size <= 0:
+        parser.error("--size must be positive")
+    if args.model in {"mdvit", "vm_unet", "ccvim"} and args.size % 32:
+        parser.error(f"{args.model} requires --size to be divisible by 32")
+
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is unavailable; this benchmark must run on an NVIDIA GPU.")
     device = torch.device("cuda")
@@ -182,7 +214,7 @@ def main() -> None:
     print(f"gpu={torch.cuda.get_device_name(device)}")
     print(f"input=({args.batch_size}, 3, {args.size}, {args.size}), dtype=float32")
 
-    model_factory = lambda: build_model(args.model)
+    model_factory = lambda: build_model(args.model, args.size)
     model = model_factory().to(device).eval()
     load_checkpoint(model, str(args.checkpoint) if args.checkpoint else None)
     x = torch.randn(args.batch_size, 3, args.size, args.size, device=device, dtype=torch.float32)

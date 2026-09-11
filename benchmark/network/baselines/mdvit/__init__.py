@@ -1,1 +1,3 @@
-"""MDViT baseline placeholder."""
+from .model import MDViT
+
+__all__ = ["MDViT"]
