@@ -62,10 +62,11 @@ Numbers recomputed from the upstream source, cross-checked against the official
   backbone with UperNet via mmsegmentation for ADE20K, and with Mask R-CNN/FPN
   via mmdetection for COCO), and the reported parameters/FLOPs then belong to
   backbone + decoder, not to the 22.89 M / 30.22 M backbone alone.
-- **Decide first, then integrate.** Either delete this table row, or fix an
-  explicitly named adaptation (for example VMamba-T `s1l8` from
-  `classification/configs/vssm/vmambav2v_tiny_224.yaml` plus a named decoder)
-  and report that configuration's numbers.
+- For an architecture-only smoke/throughput measurement, this benchmark now
+  exposes the official `vmamba_tiny_s1l8` **classification** model through
+  `--model vmamba`. Its output is `[B,1000]`; it is not comparable to a dense
+  segmentation row. A segmentation comparison still requires an explicitly
+  named decoder (for example UperNet) and should be integrated separately.
 
 ## Model details once a configuration is chosen
 

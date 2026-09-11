@@ -1,3 +1,3 @@
-from .model import VMambaBackbone
+from .model import VMambaBackbone, VMambaClassifier
 
-__all__ = ["VMambaBackbone"]
+__all__ = ["VMambaBackbone", "VMambaClassifier"]

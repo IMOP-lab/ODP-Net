@@ -75,10 +75,9 @@ def build_model(name: str, size: int = 224) -> torch.nn.Module:
 
         return CCViM(n_channels=3, n_classes=2)
     if name == "vmamba":
-        raise ValueError(
-            "VMamba official code provides a classifier/backbone, not a dense "
-            "segmentation decoder. Choose an explicit decoder before benchmarking it."
-        )
+        from network import VMambaClassifier
+
+        return VMambaClassifier()
     raise ValueError(f"Unsupported model: {name}")
 
 

@@ -24,6 +24,7 @@ _LAZY_MODELS = {
     "VMUNet": ("baselines.vm_unet.model", "VMUNet"),
     "CCViM": ("baselines.ccvim.model", "CCViM"),
     "VMambaBackbone": ("baselines.vmamba.model", "VMambaBackbone"),
+    "VMambaClassifier": ("baselines.vmamba.model", "VMambaClassifier"),
 }
 
 __all__ = [
@@ -42,6 +43,7 @@ __all__ = [
     "VMUNet",
     "CCViM",
     "VMambaBackbone",
+    "VMambaClassifier",
 ]
 
 
